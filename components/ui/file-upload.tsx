@@ -103,6 +103,7 @@ export function FileUpload({ onUpload, accept, type = 'auto', className }: FileU
         onDrop={handleDrop}
       >
         <input
+        title='File input for uploading files'
           ref={fileInputRef}
           type="file"
           className="hidden"
