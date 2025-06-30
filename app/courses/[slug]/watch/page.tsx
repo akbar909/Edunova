@@ -108,8 +108,8 @@ export default function CourseWatchPage() {
       console.error('Failed to check enrollment:', error);
     }
   };
-  
-    useEffect(() => {
+
+  useEffect(() => {
     if (params.slug && session) {
       fetchCourseData();
       checkEnrollment();
@@ -177,8 +177,13 @@ export default function CourseWatchPage() {
   const calculateProgress = () => {
     if (!enrollment || lessons.length === 0) return 0;
     const percent = Math.round((enrollment.completedLessons.length / lessons.length) * 100);
+
     return percent > 100 ? 100 : percent;
   };
+
+  const progress = calculateProgress();
+  const isValidProgress = typeof progress === 'number' && !isNaN(progress) && progress >= 0;
+
 
   // Only show sign-in required if status is not loading and session is null
   if (status !== 'loading' && !session) {
@@ -250,10 +255,13 @@ export default function CourseWatchPage() {
           </div>
           <div className="text-right">
             <div className="text-sm text-muted-foreground">Progress</div>
-            <div className="flex items-center space-x-2">
-              <Progress value={calculateProgress()} className="w-32" />
-              <span className="text-sm font-medium text-foreground">{calculateProgress()}%</span>
-            </div>
+            {isValidProgress && (
+              <div className="flex items-center space-x-2">
+                <Progress value={progress} className="w-32" />
+                <span className="text-sm font-medium text-foreground">{progress}%</span>
+              </div>
+            )}
+
           </div>
         </div>
 
