@@ -4,7 +4,6 @@ import Navbar from '@/components/layout/Navbar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import {
@@ -234,6 +233,22 @@ export default function CourseWatchPage() {
     );
   }
 
+  // Custom ProgressBar component
+  function ProgressBar({ value, className = '' }: { value: number, className?: string }) {
+    const percent = Math.max(0, Math.min(100, value));
+    return (
+      <div className={`relative h-4 w-32 bg-gray-200 rounded-full overflow-hidden ${className}`}>
+        <div
+          className="h-full bg-blue-600 transition-all"
+          style={{ width: `${percent}%` }}
+        />
+        <span className="absolute inset-0 flex items-center justify-center text-xs text-black font-semibold">
+          {percent}%
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -257,11 +272,9 @@ export default function CourseWatchPage() {
             <div className="text-sm text-muted-foreground">Progress</div>
             {isValidProgress && (
               <div className="flex items-center space-x-2">
-                <Progress value={progress} className="w-32" />
-                <span className="text-sm font-medium text-foreground">{progress}%</span>
+                <ProgressBar value={typeof progress === 'number' && !isNaN(progress) ? progress : 0} />
               </div>
             )}
-
           </div>
         </div>
 

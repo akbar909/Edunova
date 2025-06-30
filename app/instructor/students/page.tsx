@@ -1,12 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import DashboardLayout from '@/components/layout/DashboardLayout';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
     Table,
@@ -17,29 +22,19 @@ import {
     TableRow,
 } from '@/components/ui/table';
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import DashboardLayout from '@/components/layout/DashboardLayout';
-import {
-    Search,
-    Users,
-    GraduationCap,
-    TrendingUp,
     Award,
-    MoreHorizontal,
+    BookOpen,
+    Calendar,
+    CheckCircle,
     Eye,
     Mail,
-    Calendar,
-    BookOpen,
-    Clock,
-    CheckCircle,
-    Filter
+    MoreHorizontal,
+    Search,
+    TrendingUp,
+    Users
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 interface Student {
     _id: string;
@@ -65,6 +60,21 @@ interface Course {
     _id: string;
     title: string;
     slug: string;
+}
+
+function ProgressBar({ value, className = '' }: { value: number; className?: string }) {
+    const percent = Math.max(0, Math.min(100, value));
+    return (
+        <div className={`relative h-3 w-full bg-gray-200 rounded-full overflow-hidden ${className}`}>
+            <div
+                className="h-full bg-blue-600 transition-all"
+                style={{ width: `${percent}%` }}
+            />
+            <span className="absolute inset-0 flex items-center justify-center text-xs text-black font-semibold">
+                {percent}%
+            </span>
+        </div>
+    );
 }
 
 export default function InstructorStudents() {
@@ -355,7 +365,7 @@ export default function InstructorStudents() {
                                                                 {getProgressStatus(student.averageProgress)}
                                                             </Badge>
                                                         </div>
-                                                        <Progress value={student.averageProgress} className="w-full" />
+                                                        <ProgressBar value={student.averageProgress} className="w-full" />
                                                     </div>
                                                 </TableCell>
                                                 <TableCell>
@@ -440,7 +450,7 @@ export default function InstructorStudents() {
                                                     </div>
                                                 </div>
                                                 <div className="w-20">
-                                                    <Progress value={avgProgress} className="w-full" />
+                                                    <ProgressBar value={avgProgress} className="w-full" />
                                                 </div>
                                             </div>
                                         );

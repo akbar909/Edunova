@@ -1,16 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
+import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import DashboardLayout from '@/components/layout/DashboardLayout';
-import { BookOpen, Search, Play, Clock, Award, Filter } from 'lucide-react';
+import { Award, BookOpen, Clock, Play, Search } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 interface Enrollment {
     _id: string;
@@ -230,7 +229,7 @@ export default function MyCourses() {
                                                 <span className="text-muted-foreground">Progress</span>
                                                 <span className="font-medium text-foreground"> {Math.min(enrollment.progress, 100)}%</span>
                                             </div>
-                                            <Progress value={enrollment.progress} className="w-full" />
+                                            <ProgressBar value={enrollment.progress} className="w-full" />
 
                                             <div className="flex items-center justify-between">
                                                 <Badge variant="outline">
@@ -263,4 +262,20 @@ export default function MyCourses() {
             </div>
         </DashboardLayout>
     );
+}
+
+// Custom ProgressBar component
+function ProgressBar({ value, className = '' }: { value: number, className?: string }) {
+  const percent = Math.max(0, Math.min(100, value));
+  return (
+    <div className={`relative h-3 w-full bg-gray-200 rounded-full overflow-hidden ${className}`}>
+      <div
+        className="h-full bg-blue-600 transition-all"
+        style={{ width: `${percent}%` }}
+      />
+      <span className="absolute inset-0 flex items-center justify-center text-xs text-black font-semibold">
+        {percent}%
+      </span>
+    </div>
+  );
 }

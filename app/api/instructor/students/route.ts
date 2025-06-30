@@ -1,10 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongodb';
-import User from '@/lib/models/User';
 import Course from '@/lib/models/Course';
 import Enrollment from '@/lib/models/Enrollment';
+import connectDB from '@/lib/mongodb';
+import { getServerSession } from 'next-auth';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(req: NextRequest) {
   try {
@@ -63,8 +62,11 @@ export async function GET(req: NextRequest) {
     const studentMap = new Map();
 
     enrollments.forEach(enrollment => {
-      const studentId = enrollment.userId._id.toString();
-      
+      // Defensive: skip if userId or courseId is null (should not happen, but possible if data is corrupted)
+      if (!enrollment.userId || !enrollment.courseId) return;
+      const studentId = enrollment.userId._id?.toString();
+      if (!studentId) return;
+
       if (!studentMap.has(studentId)) {
         studentMap.set(studentId, {
           _id: studentId,

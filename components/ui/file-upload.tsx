@@ -1,16 +1,29 @@
 'use client';
 
-import { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Upload, X, FileVideo, FileImage, File } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { File, FileImage, FileVideo } from 'lucide-react';
+import { useRef, useState } from 'react';
 
 interface FileUploadProps {
   onUpload: (url: string) => void;
   accept?: string;
   type?: 'video' | 'image' | 'auto';
   className?: string;
+}
+
+function ProgressBar({ value, className = '' }: { value: number; className?: string }) {
+  const percent = Math.max(0, Math.min(100, value));
+  return (
+    <div className={`relative h-3 w-full bg-gray-200 rounded-full overflow-hidden ${className}`}>
+      <div
+        className="h-full bg-blue-600 transition-all"
+        style={{ width: `${percent}%` }}
+      />
+      <span className="absolute inset-0 flex items-center justify-center text-xs text-black font-semibold">
+        {percent}%
+      </span>
+    </div>
+  );
 }
 
 export function FileUpload({ onUpload, accept, type = 'auto', className }: FileUploadProps) {
@@ -136,7 +149,7 @@ export function FileUpload({ onUpload, accept, type = 'auto', className }: FileU
 
         {uploading && (
           <div className="mt-4">
-            <Progress value={progress} className="w-full" />
+            <ProgressBar value={progress} className="w-full" />
             <p className="text-xs text-gray-500 mt-1">Uploading...</p>
           </div>
         )}

@@ -3,7 +3,6 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
 import { Award, BookOpen, Clock, GraduationCap } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import Link from 'next/link';
@@ -22,6 +21,21 @@ interface Enrollment {
       name: string;
     };
   };
+}
+
+function ProgressBar({ value, className = '' }: { value: number; className?: string }) {
+  const percent = Math.max(0, Math.min(100, value));
+  return (
+    <div className={`relative h-3 w-full bg-gray-200 rounded-full overflow-hidden ${className}`}>
+      <div
+        className="h-full bg-blue-600 transition-all"
+        style={{ width: `${percent}%` }}
+      />
+      <span className="absolute inset-0 flex items-center justify-center text-xs text-black font-semibold">
+        {percent}%
+      </span>
+    </div>
+  );
 }
 
 export default function StudentDashboard() {
@@ -146,7 +160,7 @@ export default function StudentDashboard() {
                           <span className="text-muted-foreground">Progress</span>
                           <span className="text-foreground">{enrollment.progress}%</span>
                         </div>
-                        <Progress value={enrollment.progress} className="mt-1" />
+                        <ProgressBar value={enrollment.progress} className="mt-1" />
                       </div>
                     </div>
                     <Link href={`/courses/${enrollment.courseId._id}`}>
@@ -204,7 +218,7 @@ export default function StudentDashboard() {
                       <p className="text-sm text-muted-foreground">
                         {Math.min(enrollment.progress, 100)}% complete
                       </p>
-                      <Progress value={enrollment.progress} className="w-20 mt-1" />
+                      <ProgressBar value={enrollment.progress} className="w-20 mt-1" />
                     </div>
                     <Link href={`/courses/${enrollment.courseId._id}`}>
                       <Button variant="outline" size="sm">View</Button>
