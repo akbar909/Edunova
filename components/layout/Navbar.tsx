@@ -17,7 +17,7 @@ import { Menu, X, BookOpen, User, LogOut } from 'lucide-react';
 export default function Navbar() {
   const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
-    const [isMounted, setIsMounted] = useState(false);
+    // const [isMounted, setIsMounted] = useState(false);
 
   const getDashboardLink = () => {
     if (!session) return '/auth/signin';
@@ -31,12 +31,12 @@ export default function Navbar() {
         return '/dashboard';
     }
   };
-   useEffect(() => {
-    // Now we are safely on the client
-    setIsMounted(true);
-  }, []);
+  //  useEffect(() => {
+  //   // Now we are safely on the client
+  //   setIsMounted(true);
+  // }, []);
 
-  if (!isMounted) return null; // Avoid rendering until after hydration
+  // if (!isMounted) return null; // Avoid rendering until after hydration
 
   return (
     <nav className="bg-background border-b border-border shadow-sm">

@@ -53,9 +53,9 @@ export default function CoursesPage() {
       }
     };
     fetchCategories();
-  }, [setCategories]);
+  }, []); // Only run once on mount
 
-  // Fetch courses when filters change
+  // Fetch courses on mount and when filters change
   useEffect(() => {
     const fetchCourses = async () => {
       setLoading(true);
