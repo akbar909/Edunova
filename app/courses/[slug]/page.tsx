@@ -1,12 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useParams } from 'next/navigation';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import Navbar from '@/components/layout/Navbar';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   Dialog,
   DialogContent,
@@ -15,10 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import Navbar from '@/components/layout/Navbar';
-import { Play, Clock, Download, Star, Users, CheckCircle, Lock, CreditCard, Shield, Zap } from 'lucide-react';
-import { toast } from 'sonner';
+import { Separator } from '@/components/ui/separator';
+import { CheckCircle, Clock, CreditCard, Download, Lock, Play, Shield, Star, Users, Zap } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface Course {
   _id: string;
@@ -47,7 +47,6 @@ interface Lesson {
 }
 
 export default function CourseDetailPage() {
-  const [mounted, setMounted] = useState(false);
   const { data: session } = useSession();
   const params = useParams();
   const [course, setCourse] = useState<Course | null>(null);
@@ -57,51 +56,53 @@ export default function CourseDetailPage() {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [processingPayment, setProcessingPayment] = useState(false);
- useEffect(() => {
-    setMounted(true);
-  }, []);
+  const [error, setError] = useState<string | null>(null);
 
+  // Fetch course when slug changes
   useEffect(() => {
-    if (mounted && params.slug) {
-      fetchCourse();
-    }
-  }, [mounted, params.slug]);
+    if (!params.slug) return;
+    setLoading(true);
+    setError(null);
+    const fetchCourse = async () => {
+      try {
+        const response = await fetch(`/api/courses/${params.slug}`);
+        if (response.ok) {
+          const data = await response.json();
+          setCourse(data.course);
+          setLessons(data.lessons);
+        } else {
+          setCourse(null);
+          setLessons([]);
+          setError('Course not found');
+        }
+      } catch (error) {
+        setError('Failed to fetch course');
+        setCourse(null);
+        setLessons([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourse();
+  }, [params.slug]);
 
+  // Check enrollment when session and course are available
   useEffect(() => {
-    if (mounted && session && course) {
-      checkEnrollment();
-    }
-  }, [mounted, session, course]);
-
-  if (!mounted) return null;
-
-  const fetchCourse = async () => {
-    try {
-      const response = await fetch(`/api/courses/${params.slug}`);
-      if (response.ok) {
-        const data = await response.json();
-        setCourse(data.course);
-        setLessons(data.lessons);
+    if (!session || !course) return;
+    const checkEnrollment = async () => {
+      try {
+        const response = await fetch('/api/enrollments');
+        if (response.ok) {
+          const data = await response.json();
+          const enrolled = data.enrollments.some((e: any) => e.courseId._id === course._id);
+          setIsEnrolled(enrolled);
+        }
+      } catch (error) {
+        // Optionally handle error
       }
-    } catch (error) {
-      console.error('Failed to fetch course:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const checkEnrollment = async () => {
-    try {
-      const response = await fetch('/api/enrollments');
-      if (response.ok) {
-        const data = await response.json();
-        const enrolled = data.enrollments.some((e: any) => e.courseId._id === course?._id);
-        setIsEnrolled(enrolled);
-      }
-    } catch (error) {
-      console.error('Failed to check enrollment:', error);
-    }
-  };
+    };
+    checkEnrollment();
+  }, [session, course]);
 
   const handleEnrollClick = () => {
     if (!session) {
@@ -186,13 +187,13 @@ export default function CourseDetailPage() {
     );
   }
 
-  if (!course) {
+  if (error || !course) {
     return (
       <div className="min-h-screen bg-background">
         <Navbar />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-foreground mb-2">Course not found</h1>
+            <h1 className="text-2xl font-bold text-foreground mb-2">{error || 'Course not found'}</h1>
             <p className="text-muted-foreground">The course you're looking for doesn't exist.</p>
           </div>
         </div>

@@ -4,6 +4,7 @@ import Enrollment from '@/lib/models/Enrollment';
 import connectDB from '@/lib/mongodb';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
+export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {

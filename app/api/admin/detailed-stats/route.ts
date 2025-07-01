@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import connectDB from '@/lib/mongodb';
-import User from '@/lib/models/User';
+import Category from '@/lib/models/Category';
 import Course from '@/lib/models/Course';
 import Enrollment from '@/lib/models/Enrollment';
-import Category from '@/lib/models/Category';
+import User from '@/lib/models/User';
+import connectDB from '@/lib/mongodb';
+import { getServerSession } from 'next-auth';
+import { NextResponse } from 'next/server';
+export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
