@@ -53,7 +53,7 @@ export default function CoursesPage() {
       }
     };
     fetchCategories();
-  }, []);
+  }, [setCategories]);
 
   // Fetch courses when filters change
   useEffect(() => {
