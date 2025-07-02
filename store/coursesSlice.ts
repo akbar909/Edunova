@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSelector, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 export interface Course {
     _id: string;
@@ -12,6 +12,7 @@ export interface Course {
         name: string;
     };
     categoryId: {
+        _id: string;
         name: string;
     };
 }
@@ -97,6 +98,41 @@ const coursesSlice = createSlice({
             });
     },
 });
+
+// Selector for filtered courses
+export const selectFilteredCourses = createSelector(
+  [
+    (state: { courses: CoursesState }) => state.courses.courses,
+    (state: { courses: CoursesState }) => state.courses.searchTerm,
+    (state: { courses: CoursesState }) => state.courses.selectedCategory,
+    (state: { courses: CoursesState }) => state.courses.courseType,
+  ],
+  (courses, searchTerm, selectedCategory, courseType) => {
+    let filtered = Array.isArray(courses) ? courses : [];
+    if (selectedCategory && selectedCategory !== 'all') {
+      filtered = filtered.filter(course => {
+        // Support both categoryId as string or object
+        if (typeof course.categoryId === 'string') {
+          return course.categoryId === selectedCategory;
+        }
+        return course.categoryId && course.categoryId._id === selectedCategory;
+      });
+    }
+    if (courseType && courseType !== 'all') {
+      filtered = filtered.filter(course =>
+        courseType === 'free' ? !course.isPaid : course.isPaid
+      );
+    }
+    if (searchTerm) {
+      filtered = filtered.filter(course =>
+        course.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        course.instructorId?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    return filtered;
+  }
+);
 
 export const { setSearchTerm, setSelectedCategory, setCourseType } = coursesSlice.actions;
 export default coursesSlice.reducer;

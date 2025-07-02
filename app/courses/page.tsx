@@ -9,9 +9,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Search, Star } from 'lucide-react';
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import {
   fetchCategories,
   fetchCourses,
+  selectFilteredCourses,
   setCourseType,
   setSearchTerm,
   setSelectedCategory,
@@ -21,13 +23,15 @@ import { useAppDispatch, useAppSelector } from '../../store/hooks';
 export default function CoursesPage() {
   const dispatch = useAppDispatch();
   const {
-    courses,
     categories,
     loading,
     searchTerm,
     selectedCategory,
     courseType,
   } = useAppSelector((state) => state.courses);
+
+  // Use selector for filtered courses
+  const filteredCourses = useSelector(selectFilteredCourses);
 
   // Fetch categories only once on mount
   useEffect(() => {
@@ -38,13 +42,6 @@ export default function CoursesPage() {
   useEffect(() => {
     dispatch(fetchCourses());
   }, [dispatch, selectedCategory, courseType]);
-
-  // Filtered courses by search term
-  const filteredCourses = courses.filter(course =>
-    course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    course.instructorId.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
     <div className="min-h-screen bg-background">
