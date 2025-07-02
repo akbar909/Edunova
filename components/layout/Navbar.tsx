@@ -31,13 +31,7 @@ export default function Navbar() {
         return '/dashboard';
     }
   };
-  //  useEffect(() => {
-  //   // Now we are safely on the client
-  //   setIsMounted(true);
-  // }, []);
-
-  // if (!isMounted) return null; // Avoid rendering until after hydration
-
+  
   return (
     <nav className="bg-background border-b border-border shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

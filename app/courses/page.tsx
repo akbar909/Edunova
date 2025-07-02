@@ -8,75 +8,36 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Star } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-
-interface Course {
-  _id: string;
-  title: string;
-  description: string;
-  thumbnail: string;
-  isPaid: boolean;
-  price: number;
-  slug: string;
-  instructorId: {
-    name: string;
-  };
-  categoryId: {
-    name: string;
-  };
-}
-
-interface Category {
-  _id: string;
-  name: string;
-}
+import { useEffect } from 'react';
+import {
+  fetchCategories,
+  fetchCourses,
+  setCourseType,
+  setSearchTerm,
+  setSelectedCategory,
+} from '../../store/coursesSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 export default function CoursesPage() {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [courseType, setCourseType] = useState('all');
+  const dispatch = useAppDispatch();
+  const {
+    courses,
+    categories,
+    loading,
+    searchTerm,
+    selectedCategory,
+    courseType,
+  } = useAppSelector((state) => state.courses);
 
   // Fetch categories only once on mount
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('/api/categories');
-        if (response.ok) {
-          const data = await response.json();
-          setCategories(data.categories);
-        }
-      } catch (error) {
-        console.error('Failed to fetch categories:', error);
-      }
-    };
-    fetchCategories();
-  }, []); // Only run once on mount
+    dispatch(fetchCategories());
+  }, [dispatch]);
 
   // Fetch courses on mount and when filters change
   useEffect(() => {
-    const fetchCourses = async () => {
-      setLoading(true);
-      try {
-        const params = new URLSearchParams();
-        if (selectedCategory !== 'all') params.append('category', selectedCategory);
-        if (courseType !== 'all') params.append('type', courseType);
-
-        const response = await fetch(`/api/courses?${params.toString()}`);
-        if (response.ok) {
-          const data = await response.json();
-          setCourses(data.courses);
-        }
-      } catch (error) {
-        console.error('Failed to fetch courses:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCourses();
-  }, [selectedCategory, courseType]);
+    dispatch(fetchCourses());
+  }, [dispatch, selectedCategory, courseType]);
 
   // Filtered courses by search term
   const filteredCourses = courses.filter(course =>
@@ -102,7 +63,7 @@ export default function CoursesPage() {
             <Input
               placeholder="Search courses..."
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => dispatch(setSearchTerm(e.target.value))}
               className="pl-10"
             />
           </div>

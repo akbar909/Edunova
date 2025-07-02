@@ -73,12 +73,12 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const Sidebar = () => (
     <div className="flex flex-col h-full bg-card border-r border-border">
       <div className="flex items-center justify-between p-4 border-b border-border">
-        <div className="flex items-center space-x-2">
+        <Link href='/' className="flex items-center space-x-2">
           <div className="bg-primary p-2 rounded-lg">
             <BookOpen className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="font-semibold text-foreground">EduPlatform</span>
-        </div>
+        </Link>
         <Button
           variant="ghost"
           size="sm"
